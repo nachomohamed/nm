@@ -1,0 +1,16 @@
+<!doctype html><html><head><meta charset="utf-8"><title>NM · carga</title></head>
+<body style="font:16px system-ui;padding:24px">Pasando archivos a Instagram…
+<script>
+(async () => {
+  const files = decodeURIComponent(location.hash.slice(1)).split(',').filter(Boolean);
+  const target = 'https://www.instagram.com';
+  if (!window.opener) { document.body.textContent = 'Esta página se abre desde Instagram.'; return; }
+  for (const f of files) {
+    const r = await fetch(f, { cache: 'no-store' });
+    const buf = await r.arrayBuffer();
+    window.opener.postMessage({ nm: 1, name: f, type: r.headers.get('content-type'), buf }, target, [buf]);
+  }
+  window.opener.postMessage({ nm: 1, done: true, n: files.length }, target);
+  document.body.textContent = 'Listo: ' + files.length + ' archivos. Podés cerrar esta pestaña.';
+})();
+</script></body></html>
